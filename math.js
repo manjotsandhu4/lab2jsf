@@ -11,21 +11,28 @@ const handleCalculation = (method, x, y) => {
 
 };
 
-
-
-
-
-
+const validOptions = ['add', 'subtract', 'multiply', 'divide'];
 
 const handleHttpCalculation = (request, response) => {
-    const query = request.query;
-    const x = parseInt(query.x);
-    const y = parseInt(query.y);
-    const method = query.method;
-//get our operation and result from handle operation 
-    const result = handleCalculation(method, x, y);
+    request.query.x = Number(request.query.x);
+    request.query.y = Number(request.query.y);
+    const {x, y, method } = request.query;
 
-    response.send(`${X} ${result.operation} ${Y} = ${result.result}`);    
+//AMke sure X and Y are numbers 
+    if(isNaN(x) || isNaN(y)){
+        return response.send('Both x and y need to be a number');
+    }
+//making sure methods entered are valid options
+    if(!method || validOptions.includes(method.toLowerCase())){
+        return response.send(`Method must always be included and be one of the following: ${validOptions.join(',')}`);
+    }
+
+
+
+//get our operation and result from handle operation 
+    const {operation , result} = handleCalculation(method, x, y);
+
+    response.send(`${X} ${operation} ${Y} = ${result}`);    
 };
 
 module.export = handleHttpCalculation; //Export our calculation function 
